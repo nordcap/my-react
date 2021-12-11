@@ -2,8 +2,9 @@ import React, { useMemo, useState } from 'react';
 import PostFilter from './components/PostFilter';
 import PostForm from './components/PostForm';
 import PostList from './components/PostList';
-import MyInput from './components/UI/input/MyInput';
-import MySelect from './components/UI/select/MySelect';
+import MyButton from './components/UI/button/MyButton';
+import MyModal from './components/UI/MyModal/MyModal';
+
 import './styles/App.css';
 
 
@@ -15,10 +16,9 @@ function App() {
     { id: 1, title: 'JavaScript', body: 'description' },
     { id: 2, title: 'TypeScript', body: 'description' },
   ]);
-  // const [selectedSort, setSelectedSort] = useState('');
-  // const [searchQuery, setSearchQuery] = useState('');
-  const [filter, setFilter] = useState({ sort: '', query: '' });
 
+  const [filter, setFilter] = useState({ sort: '', query: '' });
+  const [modal, setModal] = useState(false);
 
 
   const sortedPost = useMemo(() => {
@@ -35,6 +35,7 @@ function App() {
 
   const createPost = (newPost) => {
     setPosts([...posts, newPost]);
+    setModal(false);
   }
 
 
@@ -47,7 +48,14 @@ function App() {
     <div className="App">
       <h1 className="head">Mое первое приложение на React</h1>
 
-      <PostForm create={createPost} />
+      <MyButton onClick={() => setModal(true)}>
+        Создать пользователя
+      </MyButton>
+
+      <MyModal visible={modal} setVisible={setModal}>
+        <PostForm create={createPost} />
+      </MyModal>
+
 
       <hr style={{ margin: '15px 0' }} />
       <PostFilter
