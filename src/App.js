@@ -1,5 +1,5 @@
 import axios from 'axios';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import PostFilter from './components/PostFilter';
 import PostForm from './components/PostForm';
 import PostList from './components/PostList';
@@ -20,6 +20,16 @@ function App() {
   const sortedAndSearchedPosts = usePosts(posts, filter.sort, filter.query);
 
 
+  //для первоначального запроса постов с сервера. выполняются после рендеринга страницы
+  useEffect(() => {
+    fetchPosts();
+  }, [])
+
+  async function fetchPosts() {
+    const response = await axios.get('https://jsonplaceholder.typicode.com/posts');
+    setPosts(response.data);
+  }
+
   const createPost = (newPost) => {
     setPosts([...posts, newPost]);
     setModal(false);
@@ -31,10 +41,7 @@ function App() {
   }
 
 
-  async function fetchPosts() {
-    const response = await axios.get('https://jsonplaceholder.typicode.com/posts');
-    setPosts(response.data);
-  }
+
 
   return (
     <div className="App">
