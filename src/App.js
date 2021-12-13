@@ -1,3 +1,4 @@
+import axios from 'axios';
 import React, { useState } from 'react';
 import PostFilter from './components/PostFilter';
 import PostForm from './components/PostForm';
@@ -30,8 +31,14 @@ function App() {
   }
 
 
+  async function fetchPosts() {
+    const response = await axios.get('https://jsonplaceholder.typicode.com/posts');
+    setPosts(response.data);
+  }
+
   return (
     <div className="App">
+      <button onClick={fetchPosts}>GET POSTS</button>
       <h1 className="head">Mое первое приложение на React</h1>
 
       <MyButton onClick={() => setModal(true)}>
