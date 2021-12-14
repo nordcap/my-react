@@ -1,10 +1,10 @@
-import axios from 'axios';
 import React, { useState, useEffect } from 'react';
 import PostService from './API/PostService';
 import PostFilter from './components/PostFilter';
 import PostForm from './components/PostForm';
 import PostList from './components/PostList';
 import MyButton from './components/UI/button/MyButton';
+import Loader from './components/UI/Loader/Loader';
 import MyModal from './components/UI/MyModal/MyModal';
 import { usePosts } from './hooks/hooks/usePosts';
 
@@ -61,7 +61,7 @@ function App() {
         setFilter={setFilter} />
 
       {isPostsLoading
-        ? <h1>Идет загрузка данных....</h1>
+        ? <div style={{ display: 'flex', justifyContent: 'center', marginTop: 50 }}><Loader /></div>
         : <PostList remove={removePost} posts={sortedAndSearchedPosts} title="СПИСОК ФРОНТЭНД" />
       }
 
