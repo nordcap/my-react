@@ -1,5 +1,6 @@
 import axios from 'axios';
 import React, { useState, useEffect } from 'react';
+import PostService from './API/PostService';
 import PostFilter from './components/PostFilter';
 import PostForm from './components/PostForm';
 import PostList from './components/PostList';
@@ -11,8 +12,6 @@ import './styles/App.css';
 
 
 function App() {
-
-
 
   const [posts, setPosts] = useState([]);
   const [filter, setFilter] = useState({ sort: '', query: '' });
@@ -26,8 +25,8 @@ function App() {
   }, [])
 
   async function fetchPosts() {
-    const response = await axios.get('https://jsonplaceholder.typicode.com/posts');
-    setPosts(response.data);
+    const posts = await PostService.getAll();
+    setPosts(posts);
   }
 
   const createPost = (newPost) => {
@@ -41,11 +40,8 @@ function App() {
   }
 
 
-
-
   return (
     <div className="App">
-      <button onClick={fetchPosts}>GET POSTS</button>
       <h1 className="head">Mое первое приложение на React</h1>
 
       <MyButton onClick={() => setModal(true)}>
