@@ -17,7 +17,7 @@ function App() {
   const [filter, setFilter] = useState({ sort: '', query: '' });
   const [modal, setModal] = useState(false);
   const sortedAndSearchedPosts = usePosts(posts, filter.sort, filter.query);
-
+  const [isPostsLoading, setIsPostsLoading] = useState(false);
 
   //для первоначального запроса постов с сервера. выполняются после рендеринга страницы
   useEffect(() => {
@@ -25,8 +25,10 @@ function App() {
   }, [])
 
   async function fetchPosts() {
+    setIsPostsLoading(true);
     const posts = await PostService.getAll();
     setPosts(posts);
+    setIsPostsLoading(false);
   }
 
   const createPost = (newPost) => {
@@ -58,7 +60,11 @@ function App() {
         filter={filter}
         setFilter={setFilter} />
 
-      <PostList remove={removePost} posts={sortedAndSearchedPosts} title="СПИСОК ФРОНТЭНД" />
+      {isPostsLoading
+        ? <h1>Идет загрузка данных....</h1>
+        : <PostList remove={removePost} posts={sortedAndSearchedPosts} title="СПИСОК ФРОНТЭНД" />
+      }
+
 
 
 
