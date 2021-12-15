@@ -10,6 +10,7 @@ import useFetching from './hooks/useFetching';
 import { usePosts } from './hooks/usePosts';
 
 import './styles/App.css';
+import { getPageCount, getPagesArray } from './utils/pages';
 
 
 function App() {
@@ -18,17 +19,34 @@ function App() {
   const [filter, setFilter] = useState({ sort: '', query: '' });
   const [modal, setModal] = useState(false);
   const sortedAndSearchedPosts = usePosts(posts, filter.sort, filter.query);
-  //const [isPostsLoading, setIsPostsLoading] = useState(false);
+
+  //общее кол-во страниц для пагинации
+  const [totalPages, setTotalPages] = useState(0);
+
+  //лимит постов на странице для пагинации 
+  const [limit, setLimit] = useState(10);
+  //страница для пагинации
+  const [page, setPage] = useState(1);
+
+
+  //нужно использовать useMemo=>хук usePagination
+  let pagesArray = getPagesArray(totalPages);
+
+  //получение данных
   const [fetchPosts, isPostsLoading, postError] = useFetching(async () => {
-    const posts = await PostService.getAll();
-    setPosts(posts);
+    const response = await PostService.getAll(limit, page);
+    setPosts(response.data);
+
+    //всего страниц
+    const totalCount = response.headers['x-total-count'];
+    setTotalPages(getPageCount(totalCount, limit));
   });
 
 
   //для первоначального запроса постов с сервера. выполняются после рендеринга страницы
   useEffect(() => {
     fetchPosts();
-  }, [])
+  }, [page])
 
 
 
@@ -42,6 +60,11 @@ function App() {
     setPosts(posts.filter(p => p.id !== post.id));
   }
 
+
+  const changePage = (page) => {
+    setPage(page);
+    //fetchPosts();
+  }
 
   return (
     <div className="App">
@@ -68,8 +91,19 @@ function App() {
         ? <div style={{ display: 'flex', justifyContent: 'center', marginTop: 50 }}><Loader /></div>
         : <PostList remove={removePost} posts={sortedAndSearchedPosts} title="СПИСОК ФРОНТЭНД" />
       }
+      <div className='page__wrapper'>
+        {
+          pagesArray.map(p =>
+            <span
+              onClick={() => changePage(p)}
+              key={p}
+              className={page === p ? 'page page__current' : 'page'}>
+              {p}
+            </span>
+          )
+        }
 
-
+      </div>
 
 
     </div>
