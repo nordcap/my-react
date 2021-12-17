@@ -6,11 +6,12 @@ import PostList from './components/PostList';
 import MyButton from './components/UI/button/MyButton';
 import Loader from './components/UI/Loader/Loader';
 import MyModal from './components/UI/MyModal/MyModal';
+import Pagination from './components/UI/pagination/Pagination';
 import useFetching from './hooks/useFetching';
 import { usePosts } from './hooks/usePosts';
 
 import './styles/App.css';
-import { getPageCount, getPagesArray } from './utils/pages';
+import { getPageCount } from './utils/pages';
 
 
 function App() {
@@ -29,11 +30,9 @@ function App() {
   const [page, setPage] = useState(1);
 
 
-  //нужно использовать useMemo=>хук usePagination
-  let pagesArray = getPagesArray(totalPages);
 
   //получение данных
-  const [fetchPosts, isPostsLoading, postError] = useFetching(async () => {
+  const [fetchPosts, isPostsLoading, postError] = useFetching(async (limit, page) => {
     const response = await PostService.getAll(limit, page);
     setPosts(response.data);
 
@@ -45,8 +44,8 @@ function App() {
 
   //для первоначального запроса постов с сервера. выполняются после рендеринга страницы
   useEffect(() => {
-    fetchPosts();
-  }, [page])
+    fetchPosts(limit, page);
+  }, [])
 
 
 
@@ -63,7 +62,7 @@ function App() {
 
   const changePage = (page) => {
     setPage(page);
-    //fetchPosts();
+    fetchPosts(limit, page);
   }
 
   return (
@@ -91,19 +90,12 @@ function App() {
         ? <div style={{ display: 'flex', justifyContent: 'center', marginTop: 50 }}><Loader /></div>
         : <PostList remove={removePost} posts={sortedAndSearchedPosts} title="СПИСОК ФРОНТЭНД" />
       }
-      <div className='page__wrapper'>
-        {
-          pagesArray.map(p =>
-            <span
-              onClick={() => changePage(p)}
-              key={p}
-              className={page === p ? 'page page__current' : 'page'}>
-              {p}
-            </span>
-          )
-        }
 
-      </div>
+
+      <Pagination
+        totalPages={totalPages}
+        page={page}
+        changePage={changePage} />
 
 
     </div>
