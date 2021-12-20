@@ -69,3 +69,7 @@
 .navbarlinks{
 	margin-left: auto;
 }
+
+.post__btns{
+	display: flex;
+}
